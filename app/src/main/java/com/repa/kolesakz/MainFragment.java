@@ -1,7 +1,8 @@
 package com.repa.kolesakz;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -10,9 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,12 +37,28 @@ public class MainFragment extends Fragment {
     List<CarObject>  Cars = new ArrayList();
 
     ListView listview;
+    //FragmentTransaction fTrans;
+    void ShowCar(CarObject car)
+    {
+        String actress = car.getTitle();
+        //Toast.makeText(getActivity().getApplicationContext(), actress + " selected", Toast.LENGTH_LONG).show();
+        ShowCarFragment CarFrag = new ShowCarFragment();
+        CarFrag.car=car;
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, CarFrag,"CarFrag")
+                .addToBackStack("CarFrag")
+                .commit();
+
+    }
 
     void InitTempCars() {
-        Cars.clear();
-        Cars.add(new CarObject("Загрузка...","","",""));
+        if (Cars.size()==0) {
+            Cars.clear();
+            Cars.add(new CarObject("Загрузка...", "", "", ""));
 
-        new GetHotCarsParser().execute("http://kolesa.kz/");
+            new GetHotCarsParser().execute("http://kolesa.kz/");
+        }
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +73,15 @@ public class MainFragment extends Fragment {
         listview = (ListView) getView().findViewById(R.id.CarsList);
         CarListAdapter adapter = new CarListAdapter(getActivity(), Cars);
         listview.setAdapter(adapter);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                ShowCar(Cars.get(position));
+
+            }
+        });
 
     }
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -99,12 +127,15 @@ public class MainFragment extends Fragment {
                 Elements qs = sec.select("div.hover");
                 if (qs==null) {Log.d(LOG_TAG, ">> QS is null");}
                   else {Log.d(LOG_TAG, ">> QS size:"+qs.size());}
+                int i=0;
 
                 for (Element div : qs) {
                     //Log.d(TAG, ">> div id:"+div.className());
+                    i++;
+                    //if (i>3) {break;}
                     CarObject car = new CarObject("","","","");
                     Element a =div.select("a").first();
-                    car.setLink(a.attr("href"));
+                    car.setLink("http://kolesa.kz"+a.attr("href"));
                     Element img =div.select("img").first();
                     String im=img.attr("src");
                     Bitmap bit=getBitmapFromURL(im);

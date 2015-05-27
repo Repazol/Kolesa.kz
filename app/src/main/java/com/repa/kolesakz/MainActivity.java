@@ -1,7 +1,6 @@
 package com.repa.kolesakz;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -28,7 +27,6 @@ public class MainActivity extends ActionBarActivity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
 
-    FragmentTransaction fTrans;
     MainFragment MainFrg;
     PartsFragment PartsFrg;
 
@@ -66,16 +64,28 @@ public class MainActivity extends ActionBarActivity
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
     }
+    /*@Override
+    public void onBackPressed() {
+        // Write your code here
+        Log.d(LOG_TAG, "onBackPressed");
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0){
+            boolean done = getSupportFragmentManager().popBackStackImmediate();
+            Log.d(LOG_TAG, " done="+done);
+        }
 
+        //super.onBackPressed();
+    } */
     public void ShowCarsFragment()
     {
         if (MainFrg==null)
         {
             MainFrg = new MainFragment();
         }
-        fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, MainFrg);
-        fTrans.commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, MainFrg,"MainFrg")
+                .addToBackStack("MainFrag")
+                .commit();
     }
     public void ShowPartsFragment()
     {
@@ -83,9 +93,16 @@ public class MainActivity extends ActionBarActivity
         {
             PartsFrg = new PartsFragment();
         }
-        fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, PartsFrg);
-        fTrans.commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, PartsFrg,"PartsFrg")
+                .addToBackStack("PartsFrg")
+                .commit();
+
+        //fTrans = getFragmentManager().beginTransaction();
+        //fTrans.replace(R.id.container, PartsFrg).addToBackStack("ParstFrag");
+        //fTrans.commit();
+
     }
     public void onSectionAttached(int number) {
         switch (number) {
