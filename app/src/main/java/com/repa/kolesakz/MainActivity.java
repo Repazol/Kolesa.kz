@@ -27,10 +27,12 @@ public class MainActivity extends ActionBarActivity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
 
+
     MainFragment MainFrg;
     PartsFragment PartsFrg;
 
     String LOG_TAG = "MyLog";
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     /**

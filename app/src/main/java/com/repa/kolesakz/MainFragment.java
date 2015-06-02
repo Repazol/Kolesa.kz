@@ -63,6 +63,7 @@ public class MainFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
         LOG_TAG = getString(R.string.log_tag);
         Log.d(LOG_TAG, "Main Fragment onCreateView");
         InitTempCars();
@@ -99,7 +100,7 @@ public class MainFragment extends Fragment {
         //public List<CarObject> Cars = new ArrayList();
         public Bitmap getBitmapFromURL(String src) {
             try {
-                Log.e("src",src);
+                //("src",src);
                 URL url = new URL(src);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setDoInput(true);
@@ -138,8 +139,8 @@ public class MainFragment extends Fragment {
                     car.setLink("http://kolesa.kz"+a.attr("href"));
                     Element img =div.select("img").first();
                     String im=img.attr("src");
-                    Bitmap bit=getBitmapFromURL(im);
-                    car.AddImage(im,bit);
+                    //Bitmap bit=getBitmapFromURL(im);
+                    car.AddImage(im,null);
                     Element top =div.select("span.top").first();
                     top.select("span.hot-top-text").html("");
                     car.setCity(top.text());

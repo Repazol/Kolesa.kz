@@ -45,8 +45,18 @@ public class CarListAdapter extends ArrayAdapter<CarObject> {
             PriceView.setText(list.get(position).getPrice());
             CityView.setText(list.get(position).getCity());
             Bitmap b = list.get(position).getMainImageBitmap();
+
             if (b!=null) {
                 imageView.setImageBitmap(b);
+            } else
+            {
+                String url;
+                url=list.get(position).getImage(0);
+                ImageLoader im = new ImageLoader();
+                im.SetImageView(imageView);
+                im.SetPostBitmap(list.get(position).getImageBitmap(0));
+                im.SetCarObject (list.get(position),0);
+                im.execute(url);
             }
         //} else {            view = convertView;        }
         return view;
