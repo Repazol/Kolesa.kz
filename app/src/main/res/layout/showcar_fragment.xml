@@ -20,15 +20,9 @@
                 android:text="Large Text"
                 android:id="@+id/textViewCarTitle" />
 
-            <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageViewCar"
-                android:minHeight="5dp" />
-
             <Gallery
                 android:layout_width="fill_parent"
-                android:layout_height="100dp"
+                android:layout_height="300dp"
                 android:id="@+id/gallery" />
 
             <TextView

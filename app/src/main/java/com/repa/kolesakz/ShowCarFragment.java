@@ -39,7 +39,7 @@ public class ShowCarFragment extends Fragment {
     Spanned DescriptionSpanned;
     Bitmap MainImage;
     List<Bitmap>  Images = new ArrayList();
-    public CarObject car;
+    //public CarObject car;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -55,15 +55,15 @@ public class ShowCarFragment extends Fragment {
     }
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(LOG_TAG, "Car >>"+car.getTitle());
+        Log.d(LOG_TAG, "Car >>"+MainActivity.SelectedCar.getTitle());
         TextView title = (TextView) getView().findViewById(R.id.textViewCarTitle);
-        title.setText(car.getTitle()+" "+car.getPrice());
-        ImageView mImage =(ImageView) getView().findViewById(R.id.imageViewCar);
-        mImage.setImageBitmap(car.getMainImageBitmap());
+        title.setText(MainActivity.SelectedCar.getTitle()+" "+MainActivity.SelectedCar.getPrice());
+        //ImageView mImage =(ImageView) getView().findViewById(R.id.imageViewCar);
+        //mImage.setImageBitmap(MainActivity.SelectedCar.getMainImageBitmap());
         TextView note = (TextView) getView().findViewById(R.id.textViewAbout);
         note.setText("Загрузка...");
 
-        new CarParser().execute(car.link);
+        new CarParser().execute(MainActivity.SelectedCar.link);
 
         Log.d(LOG_TAG, "Show Car Fragment onActivityCreated");
     }
@@ -112,19 +112,20 @@ public class ShowCarFragment extends Fragment {
                 //Images.add(MainImage);
                 int n=0;
 
-                Elements img = doc.select("img[itemprop=image]");
+                /*Elements img = doc.select("img[itemprop=image]");
                 for (Element im : img) {
                     if (n>0) {
                         Images.add(getBitmapFromURL(im.attr("src")));
                     }
                     n++;
 
-                }
+                } */
                 n=0;
                 Elements linksel = doc.select("a[class^=photo]");
                 for (Element l : linksel) {
                     if (n>0) {
-                        car.images.add(l.attr("href"));
+                        MainActivity.SelectedCar.AddImage(l.attr("href"),null);
+                                //images.add(l.attr("href"));
                     }
                     n++;
                     Log.d(LOG_TAG, " mImage:" + l.attr("href"));
@@ -144,31 +145,25 @@ public class ShowCarFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             Log.d(LOG_TAG, "Parser done:"+rez);
-            ImageView mImage =(ImageView) getView().findViewById(R.id.imageViewCar);
-            if (MainImage!=null) {
-                mImage.setImageBitmap(MainImage);
-            }
+            //ImageView mImage =(ImageView) getView().findViewById(R.id.imageViewCar);
+            //if (MainImage!=null) {
+            //    mImage.setImageBitmap(MainImage);
+            //}
 
             TextView note = (TextView) getView().findViewById(R.id.textViewAbout);
             note.setText(DescriptionSpanned);
+            MainActivity.ShowCarsInLogN (MainActivity.SelectedCar);
 
             Gallery gal = (Gallery) getView().findViewById(R.id.gallery);
-            gal.setAdapter(new ImageAdapter(getActivity().getApplicationContext(),Images));
+            gal.setAdapter(new ImageAdapter(getActivity().getApplicationContext(),null));
             gal.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
 
-                    ImageView mImag =(ImageView) getView().findViewById(R.id.imageViewCar);
-                    String fn = car.getImage(position);
-                    Log.d(LOG_TAG, "Try load image:"+fn);
-                    if (!fn.equals("")) {
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-                        mImag.setImageBitmap(getBitmapFromURL(fn));
+                    MainActivity.ShowCarsInLogN(MainActivity.SelectedCar);
                     }
 
-                }
             });
 
 

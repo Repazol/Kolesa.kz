@@ -15,26 +15,30 @@ import java.util.List;
 /**
  * Created by repa on 01.06.2015.
  */
+
 public class ImageAdapter extends BaseAdapter {
     private int mGalleryItemBackground;
     private Context mContext;
     List<Bitmap> Images = new ArrayList();
+    List<String> urls = new ArrayList();
 
-    public ImageAdapter(Context сontext, List<Bitmap> data) {
+    public ImageAdapter(Context сontext, List<String> data) {
         mContext = сontext;
-        Images=data;
+        urls=data;
+        //MainActivity.SelectedCar.images
+        //Images=data;
     }
 
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return Images.size();
+        return MainActivity.SelectedCar.images.size()-1;
     }
 
     @Override
     public Object getItem(int position) {
         // TODO Auto-generated method stub
-        return Images.get(position);
+        return MainActivity.SelectedCar.images.get(position);
     }
 
     @Override
@@ -47,10 +51,21 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
         ImageView view = new ImageView(mContext);
-        view.setImageBitmap(Images.get(position));
-        view.setPadding(20, 20, 20, 20);
-        view.setLayoutParams(new Gallery.LayoutParams(300, 225));
-        view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        if (view.getPaddingTop()!=20) {
+            ImageLoader im = new ImageLoader();
+            im.SetImageView(view);
+            im.SetPostBitmap(MainActivity.SelectedCar.getImageBitmap(position+1));
+            im.SetCarObject(MainActivity.SelectedCar, position+1);
+            im.execute(MainActivity.SelectedCar.getImage(position+1));
+
+            view.setPadding(20, 20, 20, 20);
+            //view.setLayoutParams(new Gallery.LayoutParams(300, 225));
+
+            view.setLayoutParams(new Gallery.LayoutParams(
+                    Gallery.LayoutParams.WRAP_CONTENT, Gallery.LayoutParams.WRAP_CONTENT));
+
+            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        }
         return view;
     }
 }

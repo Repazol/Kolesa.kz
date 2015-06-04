@@ -24,7 +24,7 @@ public class ImageLoader extends AsyncTask<String, Void, String> {
 
 
     String rez="OK";
-    String LOG_TAG="MyLog";
+    String LOG_TAG="MyImLoader";
     Bitmap PostBitmap;
     ImageView imageView;
     CarObject car;
@@ -70,6 +70,10 @@ public class ImageLoader extends AsyncTask<String, Void, String> {
 
 
         rez="OK";
+        String t="";
+        if (PostBitmap==null) {t="not";}
+
+        //Log.d(LOG_TAG, "Parser start:"+links[0]+" is "+t+" null");
         try {
             if (PostBitmap==null) {
                 PostBitmap = getBitmapFromURL(links[0]);
@@ -80,19 +84,23 @@ public class ImageLoader extends AsyncTask<String, Void, String> {
             rez=e.getMessage();
             Log.d(LOG_TAG, "Post error:"+rez);
         }
-        Log.d(LOG_TAG, "Parser done");
+        //Log.d(LOG_TAG, "Parser done");
         return rez;
     }
 
     @Override
     protected void onPostExecute(String result) {
-        Log.d(LOG_TAG, "Parser done:"+rez);
+        String t="null";
         if (result == "OK") {
             if (imageView!=null) {
                 imageView.setImageBitmap(PostBitmap);
             }
             if (car!=null&&car.bitmaps.size()>imageIndex) {
-                car.bitmaps.set(imageIndex, PostBitmap);
+                if (PostBitmap!=null) {
+                    t="image";
+                    car.bitmaps.set(imageIndex, PostBitmap);
+                }
+                Log.d(LOG_TAG, "Pos:"+imageIndex+" set "+t+" "+car.getTitle());
             }
         }
     }

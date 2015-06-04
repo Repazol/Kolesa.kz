@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class MainFragment extends Fragment {
     String LOG_TAG = "";
-    List<CarObject>  Cars = new ArrayList();
+
 
     ListView listview;
     //FragmentTransaction fTrans;
@@ -42,8 +42,9 @@ public class MainFragment extends Fragment {
     {
         String actress = car.getTitle();
         //Toast.makeText(getActivity().getApplicationContext(), actress + " selected", Toast.LENGTH_LONG).show();
+        MainActivity.SelectedCar=car;
         ShowCarFragment CarFrag = new ShowCarFragment();
-        CarFrag.car=car;
+        //CarFrag.car=car;
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, CarFrag,"CarFrag")
@@ -53,9 +54,10 @@ public class MainFragment extends Fragment {
     }
 
     void InitTempCars() {
-        if (Cars.size()==0) {
-            Cars.clear();
-            Cars.add(new CarObject("Загрузка...", "", "", ""));
+
+        if (MainActivity.Cars.size()==0) {
+            MainActivity.Cars.clear();
+            MainActivity.Cars.add(new CarObject("Загрузка...", "", "", ""));
 
             new GetHotCarsParser().execute("http://kolesa.kz/");
         }
@@ -70,16 +72,18 @@ public class MainFragment extends Fragment {
 
         return inflater.inflate(R.layout.main_fragment, null);
     }
+
     public void SetAdapter() {
         listview = (ListView) getView().findViewById(R.id.CarsList);
-        CarListAdapter adapter = new CarListAdapter(getActivity(), Cars);
+        CarListAdapter adapter = new CarListAdapter(getActivity(), MainActivity.Cars);
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                ShowCar(Cars.get(position));
+                ShowCar(MainActivity.Cars.get(position));
+                //Log.d(LOG_TAG, MainActivity.Cars.get(position).getImage(0));
 
             }
         });
@@ -98,30 +102,13 @@ public class MainFragment extends Fragment {
     class GetHotCarsParser extends AsyncTask<String, Void, String> {
         String rez="OK";
         //public List<CarObject> Cars = new ArrayList();
-        public Bitmap getBitmapFromURL(String src) {
-            try {
-                //("src",src);
-                URL url = new URL(src);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                //Log.e("Bitmap","returned");
-                return myBitmap;
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("Exception",e.getMessage());
-                return null;
-            }
-        }
         @Override
         protected String doInBackground(String... links) {
             Document doc = null;
-            Cars.clear();
+            MainActivity.Cars.clear();
 
             try {
-                doc = Jsoup.connect(links[0]).userAgent("Mozilla").get();
+                doc = Jsoup.connect(links[0]).userAgent("Mozilla Firefox").get();
                 Element sec = doc.select("section#hot-big").first();
                 //if (sec!=null) {Log.d(TAG, ">> "+sec.html());} else {Log.d(TAG, ">> Sec is null");}
 
@@ -129,6 +116,7 @@ public class MainFragment extends Fragment {
                 if (qs==null) {Log.d(LOG_TAG, ">> QS is null");}
                   else {Log.d(LOG_TAG, ">> QS size:"+qs.size());}
                 int i=0;
+                String im;
 
                 for (Element div : qs) {
                     //Log.d(TAG, ">> div id:"+div.className());
@@ -137,9 +125,13 @@ public class MainFragment extends Fragment {
                     CarObject car = new CarObject("","","","");
                     Element a =div.select("a").first();
                     car.setLink("http://kolesa.kz"+a.attr("href"));
+
                     Element img =div.select("img").first();
-                    String im=img.attr("src");
+                    im=img.attr("src");
+                    Log.d("MyLog", ">>"+im);
+                    div.select("img").first().html("");
                     //Bitmap bit=getBitmapFromURL(im);
+                    //im="";
                     car.AddImage(im,null);
                     Element top =div.select("span.top").first();
                     top.select("span.hot-top-text").html("");
@@ -148,8 +140,9 @@ public class MainFragment extends Fragment {
                     car.setPrice(tit.select("nobr").first().text());
                     tit.select("nobr").first().html("");
                     car.setTitle(tit.text());
-                    Cars.add(car);
-                    Log.d(LOG_TAG, ">>"+car.title+" "+car.price+" "+car.city);
+
+                    MainActivity.Cars.add(car);
+                    Log.d(LOG_TAG, ">>"+car.title+" "+car.getImage(0));
                     //Log.d(LOG_TAG, ">>"+car.getMainImage());
                 }
 
@@ -165,6 +158,7 @@ public class MainFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
+            MainActivity.ShowCarsInLog();
             SetAdapter();
             Log.d(LOG_TAG, "Parser done:"+rez);
             if (result != "OK") {

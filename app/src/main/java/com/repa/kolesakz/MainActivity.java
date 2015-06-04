@@ -19,14 +19,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-
+    public static List<CarObject> Cars = new ArrayList();
+    public static CarObject SelectedCar;
 
     MainFragment MainFrg;
     PartsFragment PartsFrg;
@@ -40,6 +41,33 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    public static void ShowCarsInLog () {
+        String n;
+        String LOG_TAG = "MyLog";
+        for (CarObject c:Cars) {
+            Log.d (LOG_TAG,"----------------------");
+            Log.d (LOG_TAG,c.getTitle()+" Images:"+c.getImagesCount());
+            for (int i=0;i<c.getImagesCount();i++) {
+                n="";
+                if (c.getImageBitmap(i)!=null) {n="not";}
+                Log.d (LOG_TAG,i+":"+c.getImage(i)+" is "+n+" null");
+
+            }
+        }
+    }
+
+    public static void ShowCarsInLogN (CarObject c) {
+        String n;
+        String LOG_TAG = "MyLog";
+
+        Log.d (LOG_TAG,"----------------------");
+        Log.d (LOG_TAG,c.getTitle()+" Images:"+c.getImagesCount());
+        for (int i=0;i<c.getImagesCount();i++) {
+                n="";
+                if (c.getImageBitmap(i)!=null) {n="not";}
+                Log.d (LOG_TAG,i+":"+c.getImage(i)+" is "+n+" null");
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
